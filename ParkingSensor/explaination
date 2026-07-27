@@ -1,0 +1,14 @@
+1. Introduction
+This project is a fully functional parking‑distance sensor built using an Arduino Uno, an HC‑SR04 ultrasonic sensor, and a 4‑digit 7‑segment display. The system continuously measures the distance between the sensor and an approaching object, then displays the value in real time. When the object becomes too close, the display switches from numbers to a clear “STOP” warning. The project demonstrates practical skills in electronics, sensor integration, multiplexed displays, and embedded programming.
+Components Used
+Arduino Uno R3
+HC‑SR04 ultrasonic distance sensor
+5461AS 4‑digit common‑cathode 7‑segment display
+8 × 220 Ω resistors (one per segment)
+Breadboard
+Jumper wires
+USB cable for programming and power
+
+If an object comes too close, the LCD will tell it to stop and beep.
+
+Credits: SunFounder
