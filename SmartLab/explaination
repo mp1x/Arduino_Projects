@@ -1,0 +1,88 @@
+SMART HOME HUB – LAB REPORT
+1. Title
+Smart Home Hub: Multi‑Sensor Environmental Monitoring and Control System
+2. Objective
+The objective of this lab was to design and build a smart‑home controller using an Arduino Uno. The system integrates multiple sensors and actuators to automatically monitor environmental conditions and control devices such as a fan, LED light, and buzzer. The project also includes a user interface via an LCD display and manual override buttons.
+3. Components Used
+Arduino Uno
+16×2 LCD Display
+DHT11 Temperature and Humidity Sensor
+Photoresistor (LDR) with 10kΩ resistor
+L293D Motor Driver
+DC Motor (Fan)
+LED with 220Ω resistor
+Buzzer
+Two push buttons
+Potentiometer (for LCD contrast)
+Breadboard and jumper wires
+4. System Overview
+The Smart Home Hub continuously monitors temperature, humidity, and ambient light. Based on these readings, it automatically controls a fan, LED light, and buzzer. The LCD displays real‑time sensor data and system status. Two buttons allow manual override of the fan.
+5. Wiring Summary
+LCD (4‑bit mode)
+RS → D10
+ EN → D11
+ D4 → D12
+ D5 → D13
+ D6 → D4
+ D7 → A5
+ VSS → GND
+ VDD → 5V
+ VO → Potentiometer middle pin
+ RW → GND
+ LED+ → 5V
+ LED– → GND
+DHT11 Sensor
+VCC → 5V
+ GND → GND
+ DATA → D2
+Photoresistor (LDR)
+LDR → A0
+ 10kΩ resistor → GND
+ Other side of LDR → 5V
+Fan (via L293D)
+Pin 1 (Enable 1) → D5
+ Pin 2 (IN1) → D6
+ Pin 7 (IN2) → D7
+ Pin 3 (OUT1) → Motor +
+ Pin 6 (OUT2) → Motor –
+ Pin 8 (Motor VCC) → 5V
+ Pin 16 (Logic VCC) → 5V
+ Pins 4, 5, 12, 13 → GND
+Buttons
+Button 1 → D8
+ Button 2 → D9
+ Other side of each button → GND
+Buzzer
+Signal → A1
+ GND → GND
+6. Code Summary
+The Arduino program performs the following tasks:
+Reads temperature and humidity from the DHT11 sensor.
+Reads ambient light level from the photoresistor.
+Automatically turns the fan ON when temperature exceeds 28°C and OFF when below.
+Automatically turns the LED ON when light level is below 400.
+Activates the buzzer when humidity exceeds 70%.
+Allows manual fan override using two buttons (force ON or force OFF).
+Displays temperature, humidity, light level, and fan status on the LCD.
+LCD Line 1 displays:
+ T:[temperature]C H:[humidity]%
+LCD Line 2 displays:
+ L:[light level] F:[ON/OFF]
+7. Results
+After wiring corrections and debugging, the system operated as intended. The LCD displayed accurate real‑time sensor data. The fan responded correctly to temperature changes and manual override buttons. The LED turned on in low‑light conditions. The buzzer activated when humidity exceeded the threshold. All subsystems worked together reliably.
+8. Troubleshooting Summary
+Several issues were encountered during development:
+LCD initially displayed incorrect characters due to incorrect D7 wiring. Resolved by moving LCD pin 14 to A5 and updating the code.
+Fan remained on continuously because L293D pin 1 (Enable) was tied to 5V. Resolved by connecting pin 1 only to D5.
+Buttons did not appear to work because the fan wiring prevented the Arduino from controlling the motor. Resolved after correcting L293D wiring.
+Buzzer did not activate during early tests because humidity did not exceed the threshold.
+9. Conclusion
+The Smart Home Hub successfully demonstrates integration of multiple sensors and actuators into a single automated system. The project provided experience in sensor interfacing, motor control, LCD user interfaces, and debugging multi‑component embedded systems. The final system behaves like a simplified smart‑home controller and serves as a strong foundation for more advanced IoT or automation projects.
+10. Possible Extensions
+Add menu navigation on the LCD
+Add EEPROM storage for user settings
+Add fan speed control
+Add data logging
+Add wireless communication (Bluetooth or WiFi)
+Expand into a full smart‑home control panel
+
