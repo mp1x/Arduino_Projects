@@ -1,0 +1,46 @@
+1. Introduction
+The Ultrasonic Radar Scanner is an Arduino‑based system that simulates the behavior of a real radar unit by sweeping an ultrasonic sensor across a defined angle range and measuring distances in real time. A servo motor rotates the sensor, while an LCD1602 display shows the current angle and detected distance. This project demonstrates core embedded‑systems concepts such as sensor integration, servo control, timing, and real‑time data visualization.
+4. Components Used
+Arduino Uno R3
+HC‑SR04 Ultrasonic Sensor
+SG90 Servo Motor
+LCD1602 (16‑pin parallel interface)
+10K Potentiometer (for LCD contrast)
+Breadboard
+Jumper wires
+LCD1602
+RS → D7
+EN → D8
+D4 → D9
+D5 → D10
+D6 → D11
+D7 → D12
+RW → GND
+VCC → 5V
+GND → GND
+VO → Middle pin of 10K pot
+LED+ → 5V
+LED– → GND
+Potentiometer
+Left pin → GND
+Middle pin → LCD pin 3 (VO)
+Right pin → 5V
+Ultrasonic Sensor
+TRIG → D4
+ECHO → D5
+VCC → 5V
+GND → GND
+Servo
+Signal → D3
+VCC → 5V
+GND → GND
+
+10. Code Structure
+The code is divided into clear functional blocks:
+Initialization: LCD, servo, and sensor setup
+getDistance(): Measures and returns distance
+Sweep loops: Move servo forward and backward
+LCD updates: Display angle and distance
+This modular structure makes the program easy to read and modify.
+
+
