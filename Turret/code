@@ -1,0 +1,124 @@
+#include <Servo.h>
+#include <LiquidCrystal.h>
+
+
+// LCD pins: RS, EN, D4, D5, D6, D7
+LiquidCrystal lcd(7, 8, 9, 10, 11, 12);
+
+
+Servo radarServo;
+
+
+// Ultrasonic pins
+const int trigPin = 4;
+const int echoPin = 5;
+
+
+// Servo pin
+const int servoPin = 3;
+
+
+// Variables
+long duration;
+int distance;
+
+
+void setup() {
+  // LCD setup
+  lcd.begin(16, 2);
+  lcd.print("Radar Scanner");
+  delay(1500);
+  lcd.clear();
+
+
+  // Servo setup
+  radarServo.attach(servoPin);
+
+
+  // Ultrasonic setup
+  pinMode(trigPin, OUTPUT);
+  pinMode(echoPin, INPUT);
+
+
+  // Start servo at 0 degrees
+  radarServo.write(0);
+  delay(500);
+}
+
+
+int getDistance() {
+  // Clear trigger
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+
+
+  // Trigger pulse
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+
+
+  // Read echo time
+  duration = pulseIn(echoPin, HIGH);
+
+
+  // Convert to cm
+  int dist = duration * 0.034 / 2;
+
+
+  return dist;
+}
+
+
+void loop() {
+
+
+  // Sweep from 0° to 180°
+  for (int angle = 0; angle <= 180; angle++) {
+    radarServo.write(angle);
+    delay(20); // smooth movement
+
+
+    distance = getDistance();
+
+
+    lcd.setCursor(0, 0);
+    lcd.print("Angle: ");
+    lcd.print(angle);
+    lcd.print("   "); // clear leftover digits
+
+
+    lcd.setCursor(0, 1);
+    lcd.print("Dist:  ");
+    lcd.print(distance);
+    lcd.print(" cm   ");
+
+
+    delay(40); // adjust radar speed
+  }
+
+
+  // Sweep back from 180° to 0°
+  for (int angle = 180; angle >= 0; angle--) {
+    radarServo.write(angle);
+    delay(20);
+
+
+    distance = getDistance();
+
+
+    lcd.setCursor(0, 0);
+    lcd.print("Angle: ");
+    lcd.print(angle);
+    lcd.print("   ");
+
+
+    lcd.setCursor(0, 1);
+    lcd.print("Dist:  ");
+    lcd.print(distance);
+    lcd.print(" cm   ");
+
+
+    delay(40);
+  }
+}
