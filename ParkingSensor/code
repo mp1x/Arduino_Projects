@@ -1,0 +1,146 @@
+// ----- Segment Pins (Control individual LEDs in a digit) -----
+int segA = 2;
+int segB = 3;
+int segC = 4;
+int segD = 5;
+int segE = 6;
+int segF = 7;
+int segG = 8;
+int segDP = 9; // Decimal Point
+
+
+// ----- Digit Pins (Control which of the 4 digits is active) -----
+int digit1 = 10;
+int digit2 = 11;
+int digit3 = 12;
+int digit4 = A2;   // Using Analog pin as Digital; Avoid pin 13 (built-in LED interference)
+
+
+// ----- HC-SR04 Ultrasonic Sensor Pins -----
+int trig = A0;
+int echo = A1;
+
+
+// Bitmask for numbers 0-9 (Segments A,B,C,D,E,F,G,DP)
+// 1 = ON, 0 = OFF (Assuming Common Anode via Digit Pins)
+byte nums[10][8] = {
+  {1,1,1,1,1,1,0,0}, // 0
+  {0,1,1,0,0,0,0,0}, // 1
+  {1,1,0,1,1,0,1,0}, // 2
+  {1,1,1,1,0,0,1,0}, // 3
+  {0,1,1,0,0,1,1,0}, // 4
+  {1,0,1,1,0,1,1,0}, // 5
+  {1,0,1,1,1,1,1,0}, // 6
+  {1,1,1,0,0,0,0,0}, // 7
+  {1,1,1,1,1,1,1,0}, // 8
+  {1,1,1,1,0,1,1,0}  // 9
+};
+
+
+// Patterns to display the word "STOP"
+byte S_letter[8] = {1,0,1,1,0,1,1,0};
+byte T_letter[8] = {1,0,0,0,1,1,0,0};
+byte O_letter[8] = {1,1,1,1,1,1,0,0};
+byte P_letter[8] = {1,1,0,0,1,1,1,0};
+
+
+// Buffer to hold the current segment states for all 4 digits
+byte displayBuffer[4][8];
+
+
+void setup() {
+  // Initialize all segment pins as outputs
+  int segPins[] = {segA,segB,segC,segD,segE,segF,segG,segDP};
+  for(int i=0;i<8;i++) pinMode(segPins[i], OUTPUT);
+
+
+  // Initialize all digit selection pins as outputs
+  int digPins[] = {digit1,digit2,digit3,digit4};
+  for(int i=0;i<4;i++) pinMode(digPins[i], OUTPUT);
+
+
+  // Initialize Ultrasonic sensor pins
+  pinMode(trig, OUTPUT);
+  pinMode(echo, INPUT);
+}
+
+
+// Function to trigger sensor and calculate distance in cm
+long getDistance() {
+  digitalWrite(trig, LOW); delayMicroseconds(2);
+  digitalWrite(trig, HIGH); delayMicroseconds(10); // Trigger pulse
+  digitalWrite(trig, LOW);
+
+
+  // Measure the time it takes for the pulse to return
+  long duration = pulseIn(echo, HIGH, 30000);
+  return duration / 58; // Convert time to centimeters
+}
+
+
+// Fill display buffer with "STOP" patterns
+void loadSTOP() {
+  memcpy(displayBuffer[0], S_letter, 8);
+  memcpy(displayBuffer[1], T_letter, 8);
+  memcpy(displayBuffer[2], O_letter, 8);
+  memcpy(displayBuffer[3], P_letter, 8);
+}
+
+
+// Break down a distance number into individual digits for the buffer
+void loadNumber(long dist) {
+  int d1 = dist / 1000;         // Thousands
+  int d2 = (dist / 100) % 10;   // Hundreds
+  int d3 = (dist / 10) % 10;    // Tens
+  int d4 = dist % 10;           // Ones
+
+
+  memcpy(displayBuffer[0], nums[d1], 8);
+  memcpy(displayBuffer[1], nums[d2], 8);
+  memcpy(displayBuffer[2], nums[d3], 8);
+  memcpy(displayBuffer[3], nums[d4], 8);
+}
+
+
+// Multiplexing function: Quickly switches between digits to create the illusion of a steady display
+void refreshDisplay() {
+  int segPins[] = {segA,segB,segC,segD,segE,segF,segG,segDP};
+  int digPins[] = {digit1,digit2,digit3,digit4};
+
+
+  for(int d=0; d<4; d++) {
+    // Turn off all digits (active LOW logic)
+    for(int i=0;i<4;i++) digitalWrite(digPins[i], HIGH);
+
+
+    // Set the segments for the current digit
+    for(int s=0;s<8;s++)
+      digitalWrite(segPins[s], displayBuffer[d][s]);
+
+
+    // Turn on the specific digit
+    digitalWrite(digPins[d], LOW);
+    delay(2); // Short delay for visibility
+  }
+}
+
+
+void loop() {
+  long dist = getDistance();
+
+
+  // Logic: If distance is 1-9cm, show "STOP"
+  if(dist < 10 && dist > 0) {
+    loadSTOP();
+  } else {
+    // Limit display to 9999 to prevent overflow
+    if(dist > 9999) dist = 9999;
+    loadNumber(dist);
+  }
+
+
+  // Refresh the display 50 times before measuring distance again
+  // This acts as a non-blocking delay to keep the LEDs bright
+  for(int i=0;i<50;i++)
+    refreshDisplay();
+}
