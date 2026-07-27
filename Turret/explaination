@@ -1,3 +1,0 @@
-1. Introduction
-The Automated Turret Radar System is a project designed to detect nearby objects, automatically aim toward them, and trigger a simulated firing sequence. The system integrates sensors, actuators, and visual/auditory indicators to create a functional demonstration of real‑world mechatronic principles such as scanning, targeting, and feedback control.
-This project showcases the interaction between hardware components (servos, ultrasonic sensor, LEDs, buzzer) and software logic running on an Arduino microcontroller.
